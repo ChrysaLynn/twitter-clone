@@ -2,6 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-}
+  images: {
+    domains: ["cloudflare-ipfs.com", "localhost"],
+  },
+};
 
-module.exports = nextConfig
+const { withSuperjson } = require("next-superjson");
+
+module.exports = withSuperjson()(nextConfig);
