@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Tweets from "components/Tweets";
 import prisma from "lib/prisma";
 import { getTweets } from "lib/data.js";
+import { useState } from "react";
 
 export default function Index({ tweets }) {
   const { data: session, status } = useSession();

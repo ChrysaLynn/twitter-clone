@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   });
 
   if (req.method === "POST") {
-    await prisma.tweet.create({
+    const tweet = await prisma.tweet.create({
       data: {
         content: req.body.content,
         parent: req.body.parent || null,
@@ -24,42 +24,55 @@ export default async function handler(req, res) {
         },
       },
     });
-    res.end();
-    return;
-  }
-  if (req.method === "DELETE") {
-    const id = req.body.id;
 
-    const tweet = await prisma.tweet.findUnique({
+    const tweetWithAuthorData = await prisma.tweet.findUnique({
       where: {
-        id,
-      },
-      include: {
-        author: true,
-      },
-    });
-  }
-  if (req.method === "DELETE") {
-    const id = req.body.id;
-
-    const tweet = await prisma.tweet.findUnique({
-      where: {
-        id,
+        id: tweet.id,
       },
       include: {
         author: true,
       },
     });
 
-    if (tweet.author.id !== user.id) {
-      res.status(401).end();
-      return;
-    }
-
-    await prisma.tweet.delete({
-      where: { id },
-    });
-    res.status(200).end();
+    res.json(tweetWithAuthorData);
     return;
   }
+
+  res.end();
+  return;
+}
+if (req.method === "DELETE") {
+  const id = req.body.id;
+
+  const tweet = await prisma.tweet.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      author: true,
+    },
+  });
+}
+if (req.method === "DELETE") {
+  const id = req.body.id;
+
+  const tweet = await prisma.tweet.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      author: true,
+    },
+  });
+
+  await prisma.tweet.delete({
+    where: { id },
+  });
+  res.status(200).end();
+  return; // Come back to this!!
+}
+
+if (tweet.author.id !== user.id) {
+  res.status(401).end();
+  return;
 }

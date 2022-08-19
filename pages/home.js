@@ -4,11 +4,14 @@ import NewTweet from "components/NewTweet";
 import Tweets from "components/Tweets";
 import prisma from "lib/prisma";
 import { getTweets } from "lib/data.js";
+import LoadMore from "components/LoadMore";
+import { useState } from "react";
 
-export default function Home({ tweets }) {
+export default function Home({ initialTweets }) {
   const { data: session, status } = useSession();
   const loading = status === "loading";
   const router = useRouter();
+  const [tweets, setTweets] = useState(initialTweets);
 
   if (loading) {
     return null;
@@ -24,19 +27,20 @@ export default function Home({ tweets }) {
 
   return (
     <>
-      <NewTweet />
+      <NewTweet tweets={tweets} setTweets={setTweets} />
       <Tweets tweets={tweets} />
+      <LoadMore tweets={tweets} setTweets={setTweets} />
     </>
   );
 }
 
 export async function getServerSideProps() {
-  let tweets = await getTweets(prisma);
+  let tweets = await getTweets(prisma, 2);
   //   tweets = JSON.parse(JSON.stringify(tweets));
 
   return {
     props: {
-      tweets,
+      initialTweets: tweets,
     },
   };
 }
